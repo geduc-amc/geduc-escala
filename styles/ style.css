@@ -2,27 +2,90 @@
     --primary: #0b5fa5;
     --accent: #f5c000;
     --soft: #e6f0fa;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --success: #28a745;
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f8f9fa;
     padding: 20px;
+    padding-bottom: 60px;
 }
 
 .navbar {
     background-color: var(--primary);
     margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: white !important;
 }
 
 .card {
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    border: none;
+}
+
+.card-header {
+    background-color: var(--primary);
+    color: white;
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: 600;
 }
 
 .loading {
     text-align: center;
-    padding: 20px;
+    padding: 40px;
     color: #666;
+}
+
+.alert-floating {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.list-group-item {
+    border-left: 3px solid var(--primary);
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background-color: #094980;
+    border-color: #094980;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
 }
