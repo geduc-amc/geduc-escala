@@ -7,52 +7,350 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #0b5fa5;
+            --accent: #f5c000;
+            --soft: #e6f0fa;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --success: #28a745;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
             padding: 20px;
+            padding-bottom: 60px;
         }
+        
         .navbar {
-            background-color: #0b5fa5;
+            background-color: var(--primary);
             margin-bottom: 20px;
         }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+        }
+        
         .card {
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border: none;
         }
+        
         .card-header {
-            background-color: #0b5fa5;
+            background-color: var(--primary);
             color: white;
             border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        
+        .badge-primary { background-color: var(--primary); }
+        .badge-warning { background-color: var(--warning); color: #212529; }
+        .badge-danger { background-color: var(--danger); }
+        .badge-success { background-color: var(--success); }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #094980;
+            border-color: #094980;
+        }
+        
+        .collaborator-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .collaborator-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .competencia-badge {
+            cursor: pointer;
+        }
+        
+        .hover-shadow {
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .hover-shadow:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .alert-floating {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            min-width: 300px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .turno-manha { border-left: 4px solid #4e73df; }
+        .turno-tarde { border-left: 4px solid #1cc88a; }
+        .turno-noite { border-left: 4px solid #36b9cc; }
+        
+        .alocacao-container {
+            min-height: 100px;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .alocacao-item {
+            background-color: var(--soft);
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin: 3px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .alocacao-item:hover {
+            background-color: #d0e3f8;
+        }
+        
+        @media (max-width: 768px) {
+            .card {
+                margin-bottom: 15px;
+            }
+            
+            .navbar-brand {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">
-                <i class="fas fa-calendar-alt me-2"></i>
-                GEDUC AMC - Sistema de Escalas
-            </span>
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-calendar-alt me-2"></i>GEDUC AMC - Sistema de Escalas
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-home me-1"></i> Início</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i> Opções
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" onclick="geducApp.exportarDados()"><i class="fas fa-download me-1"></i> Exportar Dados</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="document.getElementById('importFile').click()"><i class="fas fa-upload me-1"></i> Importar Dados</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="geducApp.limparDados()"><i class="fas fa-trash me-1"></i> Limpar Tudo</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Escala de Serviço</h2>
-                    </div>
+        <!-- Cabeçalho e Controles -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="h3 mb-0 text-gray-800">Escala de Serviço</h1>
+                <p class="mb-0 text-muted" id="currentDate">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+            </div>
+            <div class="col-md-4 d-flex align-items-center justify-content-end">
+                <button class="btn btn-primary me-2" onclick="geducApp.salvarDados()">
+                    <i class="fas fa-save me-1"></i> Salvar
+                </button>
+                <button class="btn btn-success" onclick="geducApp.mostrarMensagem('Sistema GEDUC AMC funcionando!', 'success')">
+                    <i class="fas fa-check me-1"></i> Testar
+                </button>
+            </div>
+        </div>
+
+        <!-- Indicadores -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary h-100 py-2">
                     <div class="card-body">
-                        <div id="loading">
-                            <div class="text-center text-muted py-4">
-                                <i class="fas fa-spinner fa-spin me-2"></i>
-                                Carregando sistema...
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Colaboradores</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalColaboradores">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-gray-300"></i>
                             </div>
                         </div>
-                        <div id="content" style="display: none;">
-                            <!-- Conteúdo será carregado aqui -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Atividades</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalAtividades">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-tasks fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Escalas Hoje</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalEscalas">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Alertas</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalAlertas">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="row">
+            <!-- Colaboradores -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Colaboradores</span>
+                        <button class="btn btn-sm btn-success" onclick="geducApp.adicionarColaborador()">
+                            <i class="fas fa-plus me-1"></i> Novo
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Filtrar por nome" id="colabFilter">
+                            <button class="btn btn-outline-secondary" type="button" onclick="geducApp.filtrarColaboradores()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="list-group" id="colaboradoresList">
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-spinner fa-spin me-2"></i> Carregando colaboradores...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Atividades -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Atividades</span>
+                        <button class="btn btn-sm btn-success" onclick="geducApp.adicionarAtividade()">
+                            <i class="fas fa-plus me-1"></i> Nova
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <select class="form-select" id="nucleoFilter" onchange="geducApp.filtrarAtividades()">
+                                <option value="">Todos os núcleos</option>
+                                <option value="Projetos/Programas">Projetos/Programas</option>
+                                <option value="Campanhas/Comandos">Campanhas/Comandos</option>
+                                <option value="Cursos/Palestras/Oficinas">Cursos/Palestras/Oficinas</option>
+                                <option value="Participações Externas">Participações Externas</option>
+                                <option value="Interno">Interno</option>
+                            </select>
+                        </div>
+                        
+                        <div class="list-group" id="atividadesList">
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-spinner fa-spin me-2"></i> Carregando atividades...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Escalas por Turno -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        Escala por Turno
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="turnoTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" onclick="geducApp.mostrarTurno('manhã')">
+                                    <i class="fas fa-sun me-1"></i> Manhã
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" onclick="geducApp.mostrarTurno('tarde')">
+                                    <i class="fas fa-cloud-sun me-1"></i> Tarde
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" onclick="geducApp.mostrarTurno('noite')">
+                                    <i class="fas fa-moon me-1"></i> Noite
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content mt-3" id="turnoContent">
+                            <div class="tab-pane fade show active">
+                                <div id="turnoEscala">
+                                    <div class="alert alert-info mt-3">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Selecione um turno para ver as escalas
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -60,108 +358,372 @@
         </div>
     </div>
 
+    <!-- Input oculto para importação -->
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="geducApp.importarDados(event)">
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript do Sistema -->
     <script>
-        // Função simples para mostrar que o JavaScript está funcionando
-        function carregarSistema() {
-            console.log('✅ JavaScript está funcionando!');
-            
-            // Dados de exemplo
-            const dados = {
-                colaboradores: [
-                    { nome: "Lucena", vinculo: "Agente (Adm)", turnos: ["manhã", "tarde"] },
-                    { nome: "Kariny", vinculo: "Agente (Adm)", turnos: ["manhã", "tarde"], licenca: "médica" },
-                    { nome: "Luana", vinculo: "Agente (Redução)", turnos: ["manhã"], reducao: "seg, ter, qua" }
-                ],
-                atividades: [
-                    { nome: "Projeto MOVER", nucleo: "Projetos/Programas", horas: 3 },
-                    { nome: "Campanha Via Livre", nucleo: "Campanhas/Comandos", horas: 4 }
-                ]
-            };
+        // Sistema de Gerenciamento de Dados para GEDUC AMC
+        console.log('🚀 Iniciando Sistema GEDUC AMC...');
 
-            // Esconder loading e mostrar conteúdo
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('content').style.display = 'block';
+        class GEDUCDataManager {
+            constructor() {
+                this.dados = {
+                    colaboradores: [],
+                    atividades: [],
+                    escalas: {}
+                };
+                this.turnoAtual = 'manhã';
+                this.init();
+            }
 
-            // Gerar HTML do conteúdo
-            document.getElementById('content').innerHTML = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4><i class="fas fa-users me-2"></i> Colaboradores</h4>
-                        <div class="list-group">
-                            ${dados.colaboradores.map(colab => `
-                                <div class="list-group-item">
-                                    <strong>${colab.nome}</strong>
-                                    <br>
-                                    <small class="text-muted">${colab.vinculo}</small>
-                                    ${colab.licenca ? '<span class="badge bg-warning float-end">Licença</span>' : ''}
-                                    ${colab.reducao ? '<span class="badge bg-info float-end">Redução</span>' : ''}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
+            async init() {
+                console.log('📦 Inicializando sistema...');
+                await this.carregarDados();
+                this.atualizarInterface();
+                this.mostrarMensagem('✅ Sistema GEDUC AMC carregado!', 'success');
+            }
+
+            async carregarDados() {
+                try {
+                    const dadosSalvos = localStorage.getItem('geduc-data');
                     
-                    <div class="col-md-6">
-                        <h4><i class="fas fa-tasks me-2"></i> Atividades</h4>
-                        <div class="list-group">
-                            ${dados.atividades.map(ativ => `
-                                <div class="list-group-item">
-                                    <strong>${ativ.nome}</strong>
-                                    <br>
-                                    <small class="text-muted">${ativ.nucleo} • ${ativ.horas}h</small>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <strong>Sistema GEDUC AMC carregado com sucesso!</strong>
-                            <br>
-                            <small>JavaScript está funcionando perfeitamente</small>
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-primary" onclick="alert('Sistema funcionando! ✅')">
-                                <i class="fas fa-test me-2"></i>Testar Sistema
-                            </button>
-                            <button class="btn btn-secondary" onclick="location.reload()">
-                                <i class="fas fa-sync me-2"></i>Recarregar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
+                    if (dadosSalvos) {
+                        this.dados = JSON.parse(dadosSalvos);
+                        console.log('💾 Dados carregados do navegador');
+                    } else {
+                        // Dados iniciais de exemplo
+                        this.dados = {
+                            colaboradores: [
+                                {
+                                    id: 'lucena',
+                                    nome: 'Lucena',
+                                    vinculo: 'Agente (Adm)',
+                                    turnoPadrao: ['manhã', 'tarde'],
+                                    competencias: ['coordenação', 'relatoria'],
+                                    licenca: null,
+                                    reducao: null
+                                },
+                                {
+                                    id: 'kariny',
+                                    nome: 'Kariny',
+                                    vinculo: 'Agente (Adm)',
+                                    turnoPadrao: ['manhã', 'tarde'],
+                                    competencias: ['educação'],
+                                    licenca: 'médica',
+                                    reducao: null
+                                }
+                            ],
+                            atividades: [
+                                {
+                                    id: 'mover',
+                                    nome: 'Projeto MOVER',
+                                    nucleo: 'Projetos/Programas',
+                                    horas: 3,
+                                    turnos: ['manhã', 'tarde'],
+                                    competencias: ['coordenação', 'palestras']
+                                }
+                            ],
+                            escalas: {}
+                        };
+                        this.salvarDados();
+                        console.log('📝 Dados iniciais criados');
+                    }
+                } catch (error) {
+                    console.error('❌ Erro ao carregar dados:', error);
+                    this.mostrarMensagem('Erro ao carregar dados', 'error');
+                }
+            }
 
-            console.log('🎉 Sistema carregado com sucesso!');
+            atualizarInterface() {
+                this.atualizarIndicadores();
+                this.renderColaboradores();
+                this.renderAtividades();
+                this.mostrarTurno(this.turnoAtual);
+            }
+
+            atualizarIndicadores() {
+                document.getElementById('totalColaboradores').textContent = this.dados.colaboradores.length;
+                document.getElementById('totalAtividades').textContent = this.dados.atividades.length;
+                
+                const hoje = new Date().toISOString().split('T')[0];
+                const escalasHoje = this.dados.escalas[hoje] ? Object.keys(this.dados.escalas[hoje]).length : 0;
+                document.getElementById('totalEscalas').textContent = escalasHoje;
+            }
+
+            renderColaboradores() {
+                const lista = document.getElementById('colaboradoresList');
+                const filter = document.getElementById('colabFilter').value.toLowerCase();
+                
+                const colaboradoresFiltrados = this.dados.colaboradores.filter(colab =>
+                    colab.nome.toLowerCase().includes(filter)
+                );
+
+                if (colaboradoresFiltrados.length === 0) {
+                    lista.innerHTML = '<div class="text-center py-4 text-muted">Nenhum colaborador encontrado</div>';
+                    return;
+                }
+
+                lista.innerHTML = colaboradoresFiltrados.map(colab => `
+                    <div class="list-group-item collaborator-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">${colab.nome}</h6>
+                                <small class="text-muted">${colab.vinculo}</small>
+                                <div class="mt-2">
+                                    ${colab.turnoPadrao.map(t => `<span class="badge bg-secondary me-1">${t}</span>`).join('')}
+                                    ${colab.licenca ? `<span class="badge bg-warning">Licença</span>` : ''}
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-danger" onclick="geducApp.removerColaborador('${colab.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            renderAtividades() {
+                const lista = document.getElementById('atividadesList');
+                const nucleoFilter = document.getElementById('nucleoFilter').value;
+                
+                const atividadesFiltradas = this.dados.atividades.filter(ativ =>
+                    !nucleoFilter || ativ.nucleo === nucleoFilter
+                );
+
+                if (atividadesFiltradas.length === 0) {
+                    lista.innerHTML = '<div class="text-center py-4 text-muted">Nenhuma atividade encontrada</div>';
+                    return;
+                }
+
+                lista.innerHTML = atividadesFiltradas.map(ativ => `
+                    <div class="list-group-item hover-shadow">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">${ativ.nome}</h6>
+                                <small class="text-muted">${ativ.nucleo} • ${ativ.horas}h</small>
+                                <div class="mt-2">
+                                    ${ativ.turnos.map(t => `<span class="badge bg-primary me-1">${t}</span>`).join('')}
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-danger" onclick="geducApp.removerAtividade('${ativ.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            mostrarTurno(turno) {
+                this.turnoAtual = turno;
+                const container = document.getElementById('turnoEscala');
+                
+                const atividadesTurno = this.dados.atividades.filter(ativ => 
+                    ativ.turnos.includes(turno)
+                );
+
+                if (atividadesTurno.length === 0) {
+                    container.innerHTML = `
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Nenhuma atividade cadastrada para o turno da ${turno}
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = atividadesTurno.map(ativ => `
+                    <div class="card mb-3 turno-${turno.replace('ã', 'a')}">
+                        <div class="card-header">
+                            ${ativ.nome} <small class="text-muted">(${ativ.nucleo} - ${ativ.horas}h)</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Coordenador</h6>
+                                    <div class="alocacao-container mb-2">
+                                        <span class="text-muted">Nenhum</span>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary w-100">
+                                        <i class="fas fa-plus"></i> Alocar
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Executor</h6>
+                                    <div class="alocacao-container mb-2">
+                                        <span class="text-muted">Nenhum</span>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary w-100">
+                                        <i class="fas fa-plus"></i> Alocar
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Apoio</h6>
+                                    <div class="alocacao-container mb-2">
+                                        <span class="text-muted">Nenhum</span>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary w-100">
+                                        <i class="fas fa-plus"></i> Alocar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            adicionarColaborador() {
+                const nome = prompt('Nome do novo colaborador:');
+                if (nome) {
+                    const novoId = 'colab-' + Date.now();
+                    const novoColab = {
+                        id: novoId,
+                        nome: nome,
+                        vinculo: 'Agente (Oper)',
+                        turnoPadrao: ['manhã'],
+                        competencias: [],
+                        licenca: null,
+                        reducao: null
+                    };
+                    
+                    this.dados.colaboradores.push(novoColab);
+                    this.salvarDados();
+                    this.atualizarInterface();
+                    this.mostrarMensagem('Colaborador adicionado!', 'success');
+                }
+            }
+
+            adicionarAtividade() {
+                const nome = prompt('Nome da nova atividade:');
+                if (nome) {
+                    const novoId = 'ativ-' + Date.now();
+                    const novaAtiv = {
+                        id: novoId,
+                        nome: nome,
+                        nucleo: 'Interno',
+                        horas: 2,
+                        turnos: ['manhã'],
+                        competencias: []
+                    };
+                    
+                    this.dados.atividades.push(novaAtiv);
+                    this.salvarDados();
+                    this.atualizarInterface();
+                    this.mostrarMensagem('Atividade adicionada!', 'success');
+                }
+            }
+
+            removerColaborador(id) {
+                if (confirm('Tem certeza que deseja remover este colaborador?')) {
+                    this.dados.colaboradores = this.dados.colaboradores.filter(c => c.id !== id);
+                    this.salvarDados();
+                    this.atualizarInterface();
+                    this.mostrarMensagem('Colaborador removido!', 'success');
+                }
+            }
+
+            removerAtividade(id) {
+                if (confirm('Tem certeza que deseja remover esta atividade?')) {
+                    this.dados.atividades = this.dados.atividades.filter(a => a.id !== id);
+                    this.salvarDados();
+                    this.atualizarInterface();
+                    this.mostrarMensagem('Atividade removida!', 'success');
+                }
+            }
+
+            salvarDados() {
+                try {
+                    localStorage.setItem('geduc-data', JSON.stringify(this.dados));
+                    this.mostrarMensagem('Dados salvos com sucesso!', 'success');
+                } catch (error) {
+                    console.error('Erro ao salvar dados:', error);
+                    this.mostrarMensagem('Erro ao salvar dados', 'error');
+                }
+            }
+
+            limparDados() {
+                if (confirm('TEM CERTEZA? Isso apagará TODOS os dados permanentemente.')) {
+                    localStorage.removeItem('geduc-data');
+                    this.mostrarMensagem('Dados limpos. Recarregando...', 'info');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            }
+
+            exportarDados() {
+                const dataStr = JSON.stringify(this.dados, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                const exportFileDefaultName = `backup-geduc-${new Date().toISOString().split('T')[0]}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                this.mostrarMensagem('Backup exportado com sucesso!', 'success');
+            }
+
+            importarDados(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const dados = JSON.parse(e.target.result);
+                        this.dados = dados;
+                        this.salvarDados();
+                        this.atualizarInterface();
+                        this.mostrarMensagem('Dados importados com sucesso!', 'success');
+                    } catch (error) {
+                        this.mostrarMensagem('Erro ao importar arquivo', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            filtrarColaboradores() {
+                this.renderColaboradores();
+            }
+
+            filtrarAtividades() {
+                this.renderAtividades();
+            }
+
+            mostrarMensagem(texto, tipo = 'info') {
+                // Remove mensagens anteriores
+                const alertasAntigos = document.querySelectorAll('.alert-floating');
+                alertasAntigos.forEach(alerta => alerta.remove());
+
+                const alerta = document.createElement('div');
+                alerta.className = `alert alert-${tipo} alert-floating`;
+                alerta.innerHTML = `
+                    <i class="fas ${tipo === 'success' ? 'fa-check-circle' : tipo === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} me-2"></i>
+                    ${texto}
+                    <button type="button" class="btn-close float-end" onclick="this.parentElement.remove()"></button>
+                `;
+                
+                document.body.appendChild(alerta);
+                
+                setTimeout(() => {
+                    if (alerta.parentElement) {
+                        alerta.remove();
+                    }
+                }, 4000);
+            }
         }
 
-        // Iniciar o sistema quando a página carregar
+        // Inicializar o sistema
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📋 Página carregada - iniciando sistema...');
-            
-            // Pequeno delay para simular carregamento
-            setTimeout(carregarSistema, 1000);
+            console.log('📋 DOM carregado - iniciando GEDUC AMC');
+            window.geducApp = new GEDUCDataManager();
         });
-
-        // Fallback: se não carregar em 5 segundos, mostrar erro
-        setTimeout(function() {
-            if (document.getElementById('loading').style.display !== 'none') {
-                document.getElementById('loading').innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Erro ao carregar o sistema</strong>
-                        <br>
-                        <small>Verifique o console do navegador (F12)</small>
-                    </div>
-                    <button class="btn btn-warning w-100" onclick="location.reload()">
-                        <i class="fas fa-refresh me-2"></i>Tentar Novamente
-                    </button>
-                `;
-            }
-        }, 5000);
     </script>
 </body>
-</html>
+                    </html>
