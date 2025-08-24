@@ -3,67 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Escalas - GEDUC</title>
+    <title>Sistema de Escalas - GEDUC AMC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #0b5fa5;
-            --accent: #f5c000;
-            --soft: #e6f0fa;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --success: #28a745;
-        }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
             padding: 20px;
         }
-
         .navbar {
-            background-color: var(--primary);
+            background-color: #0b5fa5;
             margin-bottom: 20px;
         }
-
         .card {
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
         .card-header {
-            background-color: var(--primary);
+            background-color: #0b5fa5;
             color: white;
             border-radius: 10px 10px 0 0 !important;
-            font-weight: 600;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-
-        .alert-floating {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1050;
-            min-width: 300px;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
         }
     </style>
 </head>
@@ -85,9 +45,14 @@
                         <h2>Escala de Serviço</h2>
                     </div>
                     <div class="card-body">
-                        <div class="loading">
-                            <i class="fas fa-spinner fa-spin me-2"></i>
-                            Iniciando sistema GEDUC...
+                        <div id="loading">
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-spinner fa-spin me-2"></i>
+                                Carregando sistema...
+                            </div>
+                        </div>
+                        <div id="content" style="display: none;">
+                            <!-- Conteúdo será carregado aqui -->
                         </div>
                     </div>
                 </div>
@@ -96,159 +61,107 @@
     </div>
 
     <script>
-        // Sistema de Gerenciamento de Dados para GEDUC AMC
-        console.log('🚀 Sistema GEDUC AMC - Iniciando...');
+        // Função simples para mostrar que o JavaScript está funcionando
+        function carregarSistema() {
+            console.log('✅ JavaScript está funcionando!');
+            
+            // Dados de exemplo
+            const dados = {
+                colaboradores: [
+                    { nome: "Lucena", vinculo: "Agente (Adm)", turnos: ["manhã", "tarde"] },
+                    { nome: "Kariny", vinculo: "Agente (Adm)", turnos: ["manhã", "tarde"], licenca: "médica" },
+                    { nome: "Luana", vinculo: "Agente (Redução)", turnos: ["manhã"], reducao: "seg, ter, qua" }
+                ],
+                atividades: [
+                    { nome: "Projeto MOVER", nucleo: "Projetos/Programas", horas: 3 },
+                    { nome: "Campanha Via Livre", nucleo: "Campanhas/Comandos", horas: 4 }
+                ]
+            };
 
-        class GEDUCDataManager {
-            constructor() {
-                this.dados = {
-                    colaboradores: [
-                        {
-                            "id": "lucena",
-                            "nome": "Lucena",
-                            "vinculo": "Agente (Adm)",
-                            "turnoPadrao": ["manhã", "tarde"],
-                            "competencias": ["coordenação", "relatoria"],
-                            "licenca": null,
-                            "reducao": null
-                        },
-                        {
-                            "id": "kariny",
-                            "nome": "Kariny",
-                            "vinculo": "Agente (Adm)",
-                            "turnoPadrao": ["manhã", "tarde"],
-                            "competencias": ["educação"],
-                            "licenca": "médica",
-                            "reducao": null
-                        }
-                    ],
-                    atividades: [
-                        {
-                            "id": "mover",
-                            "nome": "Projeto MOVER",
-                            "nucleo": "Projetos/Programas",
-                            "horas": 3,
-                            "turnos": ["manhã", "tarde"],
-                            "competencias": ["coordenação", "palestras"]
-                        }
-                    ],
-                    escalas: {}
-                };
-                
-                this.init();
-            }
+            // Esconder loading e mostrar conteúdo
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
 
-            init() {
-                console.log('📦 Carregando dados...');
-                
-                setTimeout(() => {
-                    this.carregarDados();
-                    this.mostrarInterface();
-                    this.mostrarMensagem('✅ Sistema GEDUC AMC carregado!', 'success');
-                }, 1500);
-            }
-
-            carregarDados() {
-                try {
-                    const dadosSalvos = localStorage.getItem('geduc-data');
-                    if (dadosSalvos) {
-                        this.dados = JSON.parse(dadosSalvos);
-                        console.log('💾 Dados carregados do navegador');
-                    }
-                } catch (error) {
-                    console.error('❌ Erro:', error);
-                }
-            }
-
-            mostrarInterface() {
-                const loadingElement = document.querySelector('.loading');
-                if (loadingElement) {
-                    loadingElement.remove();
-                }
-
-                const cardBody = document.querySelector('.card-body');
-                cardBody.innerHTML = `
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4><i class="fas fa-users me-2"></i> Colaboradores</h4>
-                            <p>Total: ${this.dados.colaboradores.length} cadastrados</p>
-                            <div class="list-group">
-                                ${this.dados.colaboradores.map(colab => `
-                                    <div class="list-group-item">
-                                        <strong>${colab.nome}</strong>
-                                        <br><small>${colab.vinculo}</small>
-                                        ${colab.licenca ? `<span class="badge bg-warning">Licença</span>` : ''}
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <h4><i class="fas fa-tasks me-2"></i> Atividades</h4>
-                            <p>Total: ${this.dados.atividades.length} cadastradas</p>
-                            <div class="list-group">
-                                ${this.dados.atividades.map(ativ => `
-                                    <div class="list-group-item">
-                                        <strong>${ativ.nome}</strong>
-                                        <br><small>${ativ.nucleo} • ${ativ.horas}h</small>
-                                    </div>
-                                `).join('')}
-                            </div>
+            // Gerar HTML do conteúdo
+            document.getElementById('content').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4><i class="fas fa-users me-2"></i> Colaboradores</h4>
+                        <div class="list-group">
+                            ${dados.colaboradores.map(colab => `
+                                <div class="list-group-item">
+                                    <strong>${colab.nome}</strong>
+                                    <br>
+                                    <small class="text-muted">${colab.vinculo}</small>
+                                    ${colab.licenca ? '<span class="badge bg-warning float-end">Licença</span>' : ''}
+                                    ${colab.reducao ? '<span class="badge bg-info float-end">Redução</span>' : ''}
+                                </div>
+                            `).join('')}
                         </div>
                     </div>
                     
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="alert alert-success">
-                                <i class="fas fa-check-circle me-2"></i>
-                                <strong>Sistema GEDUC AMC Online!</strong><br>
-                                <small>Dados armazenados localmente no navegador</small>
-                            </div>
-                            
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-primary" onclick="geducApp.testarSistema()">
-                                    <i class="fas fa-play me-2"></i>Testar Sistema
-                                </button>
-                                <button class="btn btn-outline-secondary" onclick="geducApp.limparDados()">
-                                    <i class="fas fa-sync me-2"></i>Reiniciar
-                                </button>
-                            </div>
+                    <div class="col-md-6">
+                        <h4><i class="fas fa-tasks me-2"></i> Atividades</h4>
+                        <div class="list-group">
+                            ${dados.atividades.map(ativ => `
+                                <div class="list-group-item">
+                                    <strong>${ativ.nome}</strong>
+                                    <br>
+                                    <small class="text-muted">${ativ.nucleo} • ${ativ.horas}h</small>
+                                </div>
+                            `).join('')}
                         </div>
                     </div>
-                `;
-            }
-
-            testarSistema() {
-                this.mostrarMensagem('🎉 Sistema funcionando perfeitamente!', 'success');
-            }
-
-            limparDados() {
-                if (confirm('Limpar todos os dados?')) {
-                    localStorage.removeItem('geduc-data');
-                    this.mostrarMensaje('Dados limpos. Recarregando...', 'info');
-                    setTimeout(() => location.reload(), 1000);
-                }
-            }
-
-            mostrarMensagem(texto, tipo = 'info') {
-                const alerta = document.createElement('div');
-                alerta.className = `alert alert-${tipo} alert-floating`;
-                alerta.innerHTML = `
-                    <i class="fas ${tipo === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
-                    ${texto}
-                    <button type="button" class="btn-close float-end" onclick="this.parentElement.remove()"></button>
-                `;
+                </div>
                 
-                document.body.appendChild(alerta);
-                setTimeout(() => alerta.remove(), 4000);
-            }
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Sistema GEDUC AMC carregado com sucesso!</strong>
+                            <br>
+                            <small>JavaScript está funcionando perfeitamente</small>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary" onclick="alert('Sistema funcionando! ✅')">
+                                <i class="fas fa-test me-2"></i>Testar Sistema
+                            </button>
+                            <button class="btn btn-secondary" onclick="location.reload()">
+                                <i class="fas fa-sync me-2"></i>Recarregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            console.log('🎉 Sistema carregado com sucesso!');
         }
 
-        // Inicializar o sistema
+        // Iniciar o sistema quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📋 DOM carregado - iniciando GEDUC AMC');
-            window.geducApp = new GEDUCDataManager();
+            console.log('📋 Página carregada - iniciando sistema...');
+            
+            // Pequeno delay para simular carregamento
+            setTimeout(carregarSistema, 1000);
         });
+
+        // Fallback: se não carregar em 5 segundos, mostrar erro
+        setTimeout(function() {
+            if (document.getElementById('loading').style.display !== 'none') {
+                document.getElementById('loading').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Erro ao carregar o sistema</strong>
+                        <br>
+                        <small>Verifique o console do navegador (F12)</small>
+                    </div>
+                    <button class="btn btn-warning w-100" onclick="location.reload()">
+                        <i class="fas fa-refresh me-2"></i>Tentar Novamente
+                    </button>
+                `;
+            }
+        }, 5000);
     </script>
 </body>
 </html>
