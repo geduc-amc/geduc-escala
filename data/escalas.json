@@ -1,0 +1,13 @@
+{
+  "2023-10-01": {
+    "manhã": {
+      "mover": {
+        "coordenador": ["lucena"],
+        "executor": ["kariny"],
+        "apoio": []
+      }
+    },
+    "tarde": {},
+    "noite": {}
+  }
+}
