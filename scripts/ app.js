@@ -1,8 +1,13 @@
-// Sistema de Gerenciamento de Dados para GEDUC (versão aprimorada)
-// Esta versão expande o cadastro de colaboradores, inclui validações de escala,
-// marca hora extra automaticamente e gera mensagem formatada para WhatsApp.
+// Sistema de Gerenciamento de Escalas para a GEDUC/AMC
+//
+// Este script expande o cadastro de colaboradores e atividades, inclui
+// validação de escalas para detectar duplicidades, marca automaticamente
+// hora extra quando o colaborador está fora do seu turno de origem e monta
+// mensagens formatadas para envio via WhatsApp. As mensagens e elementos do
+// DOM foram ajustados para uma apresentação profissional e alinhada com a
+// identidade visual da GEDUC/AMC.
 
-console.log('Sistema GEDUC aprimorado carregado!');
+console.log('Sistema GEDUC carregado!');
 
 class GEDUCDataManager {
     constructor() {
@@ -118,73 +123,91 @@ class GEDUCDataManager {
     }
 
     async init() {
-        console.log('Iniciando sistema aprimorado...');
+        console.log('Iniciando sistema...');
         // Carrega dados do localStorage, se existirem
         await this.carregarDados();
-        // Marca hora extra em todas as escalas carregadas
+        // Marca hora extra em todas as escalas carregadas e identifica duplicidades
         Object.keys(this.dados.escalas).forEach(data => {
             this.marcarHoraExtra(this.dados.escalas[data]);
-        });
-        // Gera validações na inicialização
-        Object.keys(this.dados.escalas).forEach(data => {
             const alertas = this.validarEscala(this.dados.escalas[data]);
             if (alertas.length > 0) {
                 console.warn(`Alertas para ${data}:`, alertas);
             }
         });
-        // Exibe interface inicial mínima
+        // Exibe a interface para o usuário
         this.mostrarInterface();
-        this.mostrarMensagem('Sistema GEDUC aprimorado carregado com sucesso!', 'success');
+        this.mostrarMensagem('Sistema GEDUC carregado com sucesso!', 'success');
     }
 
     async carregarDados() {
         try {
-            const dadosSalvos = localStorage.getItem('geduc-data-aprimorado');
+            const dadosSalvos = localStorage.getItem('geduc-data');
             if (dadosSalvos) {
                 this.dados = JSON.parse(dadosSalvos);
-                // Reconstroi o mapa de colaboradores
+                // Reconstrói o mapa de colaboradores
                 this.colabMap.clear();
                 this.dados.colaboradores.forEach(colab => this.colabMap.set(colab.id, colab));
-                console.log('Dados aprimorados carregados do navegador');
+                console.log('Dados carregados do navegador');
             } else {
-                console.log('Usando dados aprimorados embutidos');
+                console.log('Usando dados embutidos');
                 this.salvarDados();
             }
         } catch (error) {
-            console.error('Erro ao carregar dados aprimorados:', error);
+            console.error('Erro ao carregar dados:', error);
             this.mostrarMensagem('Erro ao carregar dados. Usando dados locais.', 'error');
         }
     }
 
     mostrarInterface() {
         // Para simplicidade, atualiza apenas um elemento com resumo dos dados
-        const container = document.getElementById('geduc-aprimorado');
+        const container = document.getElementById('geduc-app');
         if (!container) return;
+        // Renderiza listas com componentes Bootstrap, mantendo a identidade visual da GEDUC
         container.innerHTML = `
-            <h4><i class="fas fa-users me-2"></i>Colaboradores (${this.dados.colaboradores.length})</h4>
-            <ul class="list-group mb-3">
-                ${this.dados.colaboradores.map(c => `
-                    <li class="list-group-item">
-                        <strong>${c.nome}</strong> - ${c.vinculo}
-                        ${c.licenca ? `<span class="badge bg-warning ms-2">Licença: ${c.licenca}</span>` : ''}
-                        ${c.reducao ? `<span class="badge bg-info ms-2">Redução: ${c.reducao.join(', ')}</span>` : ''}
-                        ${c.orientadorViaLivre ? `<span class="badge bg-secondary ms-2">Via Livre</span>` : ''}
-                    </li>
-                `).join('')}
-            </ul>
-            <h4><i class="fas fa-calendar-day me-2"></i>Escalas</h4>
-            <ul class="list-group">
-                ${Object.keys(this.dados.escalas).map(data => `<li class="list-group-item">${data} - <button class="btn btn-sm btn-outline-primary" onclick="geducApp.gerarEEnviarWhatsApp('${data}')">WhatsApp</button></li>`).join('')}
-            </ul>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h4><i class="fas fa-users me-2"></i>Colaboradores</h4>
+                    <p>Total: ${this.dados.colaboradores.length} colaboradores</p>
+                    <ul class="list-group mb-3">
+                        ${this.dados.colaboradores.map(c => `
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">${c.nome}</div>
+                                    ${c.vinculo}
+                                </div>
+                                <span>
+                                    ${c.licenca ? `<span class="badge bg-warning me-1">Licença: ${c.licenca}</span>` : ''}
+                                    ${c.reducao ? `<span class="badge bg-info me-1">Redução: ${c.reducao.join(', ')}</span>` : ''}
+                                    ${c.orientadorViaLivre ? `<span class="badge bg-secondary">Via Livre</span>` : ''}
+                                </span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h4><i class="fas fa-calendar-day me-2"></i>Escalas</h4>
+                    <p>Total: ${Object.keys(this.dados.escalas).length} dias agendados</p>
+                    <ul class="list-group">
+                        ${Object.keys(this.dados.escalas).map(data => `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                ${data.split('-').reverse().join('/')}
+                                <button class="btn btn-sm btn-outline-primary" onclick="geducApp.gerarEEnviarWhatsApp('${data}')">
+                                    <i class="fab fa-whatsapp me-1"></i>WhatsApp
+                                </button>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            </div>
         `;
     }
 
     salvarDados() {
         try {
-            localStorage.setItem('geduc-data-aprimorado', JSON.stringify(this.dados));
-            console.log('Dados aprimorados salvos no localStorage');
+            localStorage.setItem('geduc-data', JSON.stringify(this.dados));
+            console.log('Dados salvos no localStorage');
         } catch (error) {
-            console.error('Erro ao salvar dados aprimorados:', error);
+            console.error('Erro ao salvar dados:', error);
         }
     }
 
@@ -283,7 +306,7 @@ class GEDUCDataManager {
         ['manha','tarde','noite'].forEach(turno => {
             const tarefas = escalaDia[turno];
             const titulo = turno === 'manha' ? 'MANHÃ' : turno === 'tarde' ? 'TARDE' : 'NOITE';
-            partes.push(`\n*==== ${titulo} ====*\`);
+            partes.push(`\\n*==== ${titulo} ====*\``);
             if (!tarefas || Object.keys(tarefas).length === 0) {
                 partes.push('_Nenhuma atividade escalada_');
                 return;
@@ -307,8 +330,8 @@ class GEDUCDataManager {
                 });
             });
         });
-        partes.push('\n⚠️ _Desacelere. Seu bem maior é a vida._');
-        return partes.join('\n');
+        partes.push('\\n⚠️ _Desacelere. Seu bem maior é a vida._');
+        return partes.join('\\n');
     }
 
     /**
@@ -324,7 +347,7 @@ class GEDUCDataManager {
     }
 }
 
-// Inicializa o sistema aprimorado quando a página carregar
+// Inicializa o sistema quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
     window.geducApp = new GEDUCDataManager();
 });
