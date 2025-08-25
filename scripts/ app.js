@@ -8,6 +8,14 @@
 // identidade visual da GEDUC/AMC.
 
 console.log('Sistema GEDUC carregado!');
+// Padrão WhatsApp GEDUC (asteriscos visíveis com escape)
+const PADRAO_WHATSAPP = {
+  titulo: "🚸 \\*ESCALA GEDUC\\* 🚦",
+  mensagemFinal: "⚠️ _Desacelere. Seu bem maior é a vida._",
+  separacaoNucleos: "\n\n",       // “duplo parágrafo”
+  aposCompensacoes: "\n\n\n",     // “triplo parágrafo”
+  negritoNucleo: true
+};
 
 class GEDUCDataManager {
     constructor() {
