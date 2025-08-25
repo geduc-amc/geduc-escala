@@ -12,6 +12,8 @@
 
 console.log('Sistema GEDUC carregado!');
 
+const STORAGE_KEY = 'geduc-data-v2';
+
 // Padrão de formatação WhatsApp (asteriscos VISÍVEIS)
 const PADRAO_WHATSAPP = {
   titulo: "🚸 \\*ESCALA GEDUC\\* 🚦",
@@ -73,36 +75,43 @@ class GEDUCDataManager {
         { id: 'campanha_via_livre',nome: 'Campanha Externa – Via Livre',nucleo: 'Comandos e Campanhas Educativas',   horas: 4, turnos: ['manha','tarde'], competencias: ['campanhas','comandos'] }
       ],
 
-      // Escalas por data (exemplo preenchido com seções finais)
-      escalas: {
-        "2023-10-01": {
-          manha: {
-            mover: {
-              coordenador: ['luiz_mesquita'],
-              executor:    ['heberfran'],
-              apoio:       ['alberto','edson']
-            },
-            apoio_geduc: {
-              coordenador: ['lucena'],
-              executor:    ['robson','wellington'],
-              apoio:       ['joao_rafael','samoel']
-            }
-          },
-          tarde: {
-            apoio_ceas: {
-              coordenador: ['edmara'],
-              executor:    ['ines','hellen'],
-              apoio:       ['carlos_eduardo']
-            }
-          },
-          noite: {},
-          compensacoes:        ["Carlos Eduardo (13:00–17:00)"],
-          ferias:              ["Kelber", "Façanha"],
-          aniversariantes:     ["Ana Cleide"],
-          participacoesExternas:["Curso DETRAN (2 vagas)"]
+this.dados = {
+  colaboradores: [
+    // ... (lista completa que te enviei: Lucena, C. Cunha, Kariny, Luana, Barreira,
+    // Luiz Mesquita, Façanha, Robson, Wellington, Kelber, Rafael, Heberfran, Helder,
+    // Inês, Hellen, Ronalddy, Edmara, Ana Cleide,
+    // Alberto, Edson, Romário, João Rafael, João Victor, Samoel, Clemilson, Carlos Eduardo, Lidomar)
+  ],
+  atividades: [
+    { id: 'apoio_geduc',        nome: 'Apoio GEDUC',                  nucleo: 'Apoio GEDUC',                       horas: 4, turnos: ['manha','tarde'] },
+    { id: 'apoio_ceas',         nome: 'Apoio CEAS',                   nucleo: 'Apoio CEAS',                        horas: 4, turnos: ['manha','tarde'] },
+    { id: 'mover',              nome: 'Projeto MOVER',                nucleo: 'Projetos Educacionais e de Cidadania', horas: 3, turnos: ['manha','tarde'] },
+    { id: 'campanha_via_livre', nome: 'Campanha Externa – Via Livre', nucleo: 'Comandos e Campanhas Educativas',   horas: 4, turnos: ['manha','tarde'] }
+  ],
+  escalas: {
+    "2025-08-24": {
+      manha: {
+        mover: {
+          coordenador: ['luiz_mesquita'],
+          executor:    ['heberfran'],
+          apoio:       ['alberto','edson']
         }
-      }
-    };
+      },
+      tarde: {
+        apoio_geduc: {
+          coordenador: ['lucena'],
+          executor:    ['robson','wellington'],
+          apoio:       ['joao_rafael','samoel']
+        }
+      },
+      noite: {},
+      compensacoes:         ["Carlos Eduardo (13:00–17:00)"],
+      ferias:               ["Kelber", "Façanha"],
+      aniversariantes:      ["Ana Cleide"],
+      participacoesExternas:["Curso DETRAN (2 vagas)"]
+    }
+  }
+};
 
     // Mapa rápido id -> colaborador
     this.colabMap = new Map();
@@ -127,32 +136,47 @@ class GEDUCDataManager {
   }
 
   async carregarDados() {
-    try {
-      const dadosSalvos = localStorage.getItem('geduc-data');
-      if (dadosSalvos) {
-        this.dados = JSON.parse(dadosSalvos);
-        // Recria mapa
-        this.colabMap.clear();
-        this.dados.colaboradores.forEach(c => this.colabMap.set(c.id, c));
-        console.log('Dados carregados do navegador');
-      } else {
-        console.log('Usando dados embutidos');
-        this.salvarDados();
-      }
-    } catch (e) {
-      console.error('Erro ao carregar dados:', e);
-      this.mostrarMensagem('Erro ao carregar dados. Usando dados locais.', 'error');
+  try {
+    // se abrir com ?reset=1 na URL, limpa o armazenamento
+    const params = new URLSearchParams(location.search);
+    if (params.has('reset')) {
+      localStorage.removeItem(STORAGE_KEY);
+      console.log('LocalStorage resetado por ?reset=1');
     }
-  }
 
-  salvarDados() {
-    try {
-      localStorage.setItem('geduc-data', JSON.stringify(this.dados));
-      console.log('Dados salvos no localStorage');
-    } catch (e) {
-      console.error('Erro ao salvar dados:', e);
+    const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+    if (dadosSalvos) {
+      const d = JSON.parse(dadosSalvos);
+      // Se a cópia salva for claramente "antiga" (poucos colaboradores), ignore
+      if (!Array.isArray(d.colaboradores) || d.colaboradores.length < 10) {
+        console.warn('Dados antigos detectados. Usando dados embutidos.');
+        this.salvarDados(); // salva os atuais (embutidos/atualizados)
+      } else {
+        this.dados = d;
+        console.log('Dados carregados do navegador (v2)');
+      }
+    } else {
+      console.log('Sem dados no navegador. Usando dados embutidos.');
+      this.salvarDados();
     }
+
+    // Reconstrói o mapa de colaboradores
+    this.colabMap = new Map();
+    this.dados.colaboradores.forEach(c => this.colabMap.set(c.id, c));
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+    this.mostrarMensagem('Erro ao carregar dados. Usando dados locais.', 'error');
   }
+}
+
+salvarDados() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.dados));
+    console.log('Dados salvos no localStorage (v2)');
+  } catch (error) {
+    console.error('Erro ao salvar dados:', error);
+  }
+}
 
   mostrarMensagem(texto, tipo = 'info') {
     document.querySelectorAll('.alert-floating').forEach(a => a.remove());
