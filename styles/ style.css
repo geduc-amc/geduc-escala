@@ -1,91 +1,147 @@
 :root {
-    --primary: #0b5fa5;
-    --accent: #f5c000;
-    --soft: #e6f0fa;
-    --danger: #dc3545;
-    --warning: #ffc107;
-    --success: #28a745;
+  --cor-laranja: #F15A22;
+  --cor-verde: #009889;
+  --cor-bege: #FFE6CB;
+  --cor-azul: #00A0DC;
+  --cor-azul-escuro: #325565;
+  --cor-cinza-escuro: #414042;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
-    padding: 20px;
-    padding-bottom: 60px;
+  background-color: var(--cor-bege);
+  color: var(--cor-cinza-escuro);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
-.navbar {
-    background-color: var(--primary);
-    margin-bottom: 20px;
-    border-radius: 10px;
-}
-
+/* Adjust navbar */
 .navbar-brand {
-    font-weight: 700;
-    color: white !important;
+  font-weight: bold;
+  color: var(--cor-laranja) !important;
 }
 
-.card {
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    border: none;
+#navConfig .btn {
+  color: #fff;
 }
 
+/* Header styling */
+header {
+  background-color: var(--cor-bege);
+}
+header .logo {
+  height: 80px;
+  width: auto;
+}
+header h1 {
+  color: var(--cor-laranja);
+  font-weight: 700;
+}
+header p {
+  color: var(--cor-azul-escuro);
+}
+
+/* Action bar */
+#actionBar {
+  background-color: #ffffff;
+}
+#actionBar .btn-primary {
+  background-color: var(--cor-laranja);
+  border-color: var(--cor-laranja);
+}
+#actionBar .btn-outline-secondary {
+  border-color: var(--cor-azul-escuro);
+  color: var(--cor-azul-escuro);
+}
+
+/* Cards */
 .card-header {
-    background-color: var(--primary);
-    color: white;
-    border-radius: 10px 10px 0 0 !important;
-    font-weight: 600;
+  background-color: var(--cor-verde);
+  color: #ffffff;
+  font-weight: 600;
+}
+.card {
+  background-color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+}
+.card-body {
+  background-color: #fafafa;
 }
 
-.loading {
-    text-align: center;
-    padding: 40px;
-    color: #666;
+/* Buttons */
+.btn-success {
+  background-color: var(--cor-azul);
+  border-color: var(--cor-azul);
+}
+.btn-success:hover {
+  background-color: darken(var(--cor-azul), 5%);
 }
 
-.alert-floating {
-    animation: slideIn 0.3s ease-out;
+/* Collaborators list styling */
+#colabList ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+#colabList li {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #e4e4e4;
+  cursor: pointer;
+}
+#colabList li:hover {
+  background-color: var(--cor-bege);
 }
 
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+/* Turnos columns */
+#turnosContainer .turno-col {
+  margin-bottom: 1rem;
+}
+.turno-title {
+  font-weight: 700;
+  color: var(--cor-azul-escuro);
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+.nucleo-section {
+  background-color: #ffffff;
+  border-radius: 0.25rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+}
+.nucleo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: var(--cor-azul);
+}
+.nucleo-atividades {
+  margin-top: 0.5rem;
+}
+.atividade-item {
+  background-color: var(--cor-bege);
+  padding: 0.25rem 0.5rem;
+  margin-bottom: 0.25rem;
+  border-radius: 0.25rem;
 }
 
-.list-group-item {
-    border-left: 3px solid var(--primary);
-    margin-bottom: 5px;
-    border-radius: 5px;
+/* Missions */
+#missoesContainer .calendar-placeholder {
+  text-align: center;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  color: var(--cor-azul-escuro);
 }
 
-.badge {
-    font-size: 0.75em;
+/* Modal specific tweaks */
+.modal-content {
+  border-radius: 0.5rem;
 }
-
-.btn-primary {
-    background-color: var(--primary);
-    border-color: var(--primary);
+.modal-header {
+  background-color: var(--cor-verde);
+  color: #ffffff;
 }
-
-.btn-primary:hover {
-    background-color: #094980;
-    border-color: #094980;
-}
-
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-    
-    .card {
-        margin-bottom: 15px;
-    }
+.modal-footer .btn-primary {
+  background-color: var(--cor-laranja);
+  border-color: var(--cor-laranja);
 }
